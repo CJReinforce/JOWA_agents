@@ -47,19 +47,41 @@
   <style>
     .gallery {
       width: 100%;
-      max-width: 900px; /* 可以根据需要调整 */
+      max-width: 900px;
       margin: 0 auto;
     }
 
     .row {
         display: flex;
         justify-content: space-between;
-        margin-bottom: 5px; /* 行间距 */
+        margin-bottom: 5px;
     }
 
     .row img {
-        width: 19.5%; /* 略小于 25% 以留出间距 */
+        width: 19.5%;
         height: auto;
+    }
+
+
+    .container.left-text-right-image {
+        display: flex;
+        align-items: center;
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+    .left-text-right-image .text-content {
+        flex: 7;
+        padding-right: 25px;
+        padding-left: 25px;
+    }
+    .left-text-right-image .image-container {
+        flex: 3;
+    }
+    .left-text-right-image img {
+        height: auto;
+        width: auto;
+        max-width: 100%;
+        max-height: 250px;
     }
 </style>
 </head>
@@ -163,7 +185,7 @@
       <img src="static/images/Zaxxon.gif" alt="Zaxxon">
     </div>
     <p class="note">
-      Note: Training used 84x84 grayscale images. RGB demos shown here for better visualization. 
+      *Training used 84x84 grayscale images. RGB demos shown here for better visualization. 
       For Atlantis, only the first 7 minutes of the 2-hour gameplay are displayed.
     </p><br>
   </div>
@@ -186,6 +208,96 @@
   </div>
 </section>
 <!-- End paper abstract -->
+
+
+<!-- Method -->
+<section class="hero teaser" style="padding-top: 40px;">
+  <div class="container is-max-desktop">
+    <h2 class="title is-3 has-text-centered">Method Overview</h2>
+    <div class="hero-body">
+      <img src="static/images/JOWA_architecture.png" alt="Architecture of JOWA"/>
+      <div class="content has-text-justified">
+        <p>
+          Architecture of JOWA. We use a shared transformer backbone for both world modeling and Q-value criticism to enable joint optimization. 
+          VQ-VAE tokenizes images into visual tokens. 
+          The sum of vocabulary embeddings, position embeddings and task embeddings forms the input embeddings space for the transformer backbone.
+          Training loss is the weighted sum of supervised prediction loss of the world-part module and conservative distributed TD-loss of action-part module. <br>
+        </p>
+      </div>
+    </div>
+    <div class="container left-text-right-image">
+      <div class="text-content">
+        <p>To compensate for the optimal Q-value estimation error and thus search out better policies, 
+          we propose a provably efficient and parallelizable planning algorithm 
+          and derive the condition under which the search-based optimal Q-values have a lower upper-bound of error than TD learning-based optimal Q-values. 
+          The planning helps optimal inference during evaluation and sample-efficient transfer to novel games. <br><br>
+          We first model the process of finding optimal actions within the imagined Markov Decision Process as a tree search problem, 
+          and then extend beam search as the practical and parallelizable planning algorithm.
+          When both the beam width K and horizon H equal to 2, the process of planning is shown in the right figure:</p>
+      </div>
+      <div class="image-container">
+        <img src="static/images/planning.png" alt="Planning algorithm"/>
+      </div>
+    </div>
+  </div>
+</section><br>
+<!-- End Method -->
+
+
+<!-- Experiment -->
+<section class="hero is-small is-light" style="padding-top: 40px;">
+  <div class="container is-max-desktop">
+    <h2 class="title is-3 has-text-centered">Experiments</h2>
+    <div class="hero-body">
+      <h3 class="title is-4">Scaling trends</h3>
+      <img src="static/images/scaling_trend.png" alt="scaling trend"/>
+      <div class="content has-text-justified">
+        <p>
+          We investigate algorithms' ability to leverage higher capacity architectures.
+          The performance of JOWA with planning reliably increases as the model size grows 
+          and exhibits the steepest scaling curve among all algorithms.
+          Moreover, the proposed planning algorithm improve the performance by a large margin,
+          highlighting the great scalability potential of offline model-based RL.
+        </p>
+      </div>
+
+      <h3 class="title is-4">Few-shot fine-tuning</h3>
+      <img src="static/images/fine_tune.png" alt="fine tune"/>
+      <div class="content has-text-justified">
+        <p>
+          We fine-tune pretrained agents on 5 held-out games 
+          using uniformly subsampled 5k expert-level transitions 
+          (from last 20% of DQN-Replay) per game as the benchmark. 
+          These tiny amounts of transitions corresponding to 
+          approximately 4 trajectories from expert-level DQN-Replay per fine-tuned game on average, 
+          which is similar to the settings of few-shot learning and extremely challenging. <br><br>
+
+          The fine-tuned JOWA-150M attains 64.7% IQM DQN-normalized score across 5 held-out games, 
+          outperforming baselines by 34.7% on averange. 
+          These results underscore JOWA's capacity for rapid and sample-efficient transfer to novel games, 
+          highlighting the efficacy of its learned general-purpose representation and decision-making capabilities.
+        </p>
+      </div>
+
+      <h3 class="title is-4">Ablation of training choices</h3>
+      <img src="static/images/ablation.png" alt="ablation"/>
+      <div class="content has-text-justified">
+        <p>
+          we conduct a series of controlled ablation studies to evaluate the impact of key design choices in JOWA 
+          and wish to offer valuable insights for future research in this domain.
+          For time-saving, we consider a subset of 6 games in the experiments.
+          We train all models for 1M gradient steps and fix the parameter size to 40M.
+          The conclusions are summarized as follows: <br><br>
+          (i) Joint optimization and distributional TD-loss are crucial for JOWA; <br>
+          (ii) CQL regularization, world model for planning, and task embedding significantly improves the performance; <br>
+          (iii) We have not observed significant improvements of multiple Q-heads over single Q-head, both for equal weight and random weight summation; <br>
+          (iv) Using synthetic data generated by the world model in the pre-training phase hurts performance.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+<!-- End Experiment -->
 
 
 <!--BibTex citation -->
