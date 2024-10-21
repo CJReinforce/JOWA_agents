@@ -1,8 +1,8 @@
 # JOWA
 
-This is the repository that contains source code for the JOWA website.
+This is the repository that contains source code for the [JOWA website](https://cjreinforce.github.io/JOWA_agents/).
 
-If you find JOWA useful for your work please cite:
+If you find JOWA useful for your work, please cite:
 ```latex
 @article{cheng2024scaling,
   title={Scaling Offline Model-Based RL via Jointly-Optimized World-Action Model Pretraining},
